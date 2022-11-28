@@ -5,6 +5,11 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    isManager: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
     email: {
         type: String,
         required: true,

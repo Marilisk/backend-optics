@@ -13,9 +13,10 @@ export const registerValidator = [
 ];
 
 
-export const postCreateValidator = [
-    body('title', 'введите заголовок статьи больше 3 симв').isLength({min: 3 }).isString(),
-    body('text', 'введите текст статьи больше 5 симв').isLength({min: 5}).isString(),
-    body('tags', 'неверный формат тегов').isLength({min: 3}).optional().isString(),
-    body('imageUrl', 'ссылка - не ссылка').optional().isArray(),   
+export const productCreateValidator = [
+    body('name', 'введите название продукта больше 3 симв').isLength({min: 3 }).isString(),
+    body('description', 'введите описание продукта больше 5 симв').isLength({min: 5}).isString(),
+    body('price', 'введите цену продукта больше 0').exists(),
+    body('features', 'неверный формат тегов').optional().isArray(),
+    body('options', 'неверный формат опций').optional().isArray(),   
 ];

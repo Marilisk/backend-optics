@@ -5,17 +5,14 @@ import UserModel from '../models/UserModel.js';
 
 export const register = async (req, res) => {
     try {
-        /* const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json(errors.array());
-        } */
-
+        
         const password = req.body.password;
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(password, salt);
 
         const doc = new UserModel({
             email: req.body.email,
+            isManager: req.body.isManager,
             fullName: req.body.fullName,
             passwordHash: hash,
             avatarUrl: req.body.avatarUrl,
@@ -37,9 +34,15 @@ export const register = async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        res.status(500).json({
-            message: 'can not register',
-        });
+        if (error.code === 11000) {
+            res.status(404).json({
+                message: 'Вы уже зарегистрированы',
+            })
+        } else {
+            res.status(500).json({
+                message: 'can not register',
+            });
+        } 
     }
 }
 

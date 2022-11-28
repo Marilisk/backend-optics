@@ -2,9 +2,9 @@ import express from "express";
 import multer from "multer";
 import mongoose from "mongoose";
 import cors from 'cors';
-import { registerValidator, loginValidator, postCreateValidator } from './validations.js';
+import { registerValidator, loginValidator, productCreateValidator } from './validations.js';
 import checkAuth from './utils/checkAuth.js';
-import {PostController, UserController} from './controllers/index.js';
+import {ProductController, UserController} from './controllers/index.js';
 import handleValidationErrors from "./utils/handleValidationErrors.js";
 
 mongoose.connect(
@@ -39,11 +39,13 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
     });
 })
 
-app.get('/posts', PostController.getAll);
-app.post('/posts', checkAuth, postCreateValidator, handleValidationErrors, PostController.create);
-app.get('/posts/:id', PostController.getOne);
-app.delete('/posts/:id', checkAuth, PostController.remove);
-app.patch('/posts/:id', checkAuth, postCreateValidator, handleValidationErrors, PostController.update);
+app.get('/products', ProductController.getAll);
+app.get('/features', ProductController.getFeatures);
+
+app.post('/products', checkAuth, productCreateValidator, handleValidationErrors, ProductController.create);
+app.get('/products/:id', ProductController.getOne);
+app.delete('/products/:id', checkAuth, ProductController.remove);
+app.patch('/products/:id', checkAuth, productCreateValidator, handleValidationErrors, ProductController.update);
 
 
 app.listen(4444, (err) => {
