@@ -1,5 +1,6 @@
 import express from "express";
 import multer from "multer";
+import fs from 'fs';
 import mongoose from "mongoose";
 import cors from 'cors';
 import { registerValidator, loginValidator, productCreateValidator } from './validations.js';
@@ -17,6 +18,9 @@ const app = express();
 
 const storage = multer.diskStorage({  // создаём хранилище для файлов 
     destination: (_, __, cb) => {
+        if (!fs.existsSync('uploads')) {
+            fs.mkdirSync('uploads');  // библиотека fs создает папку аплоадс если её пока нет
+        }
         cb(null, 'uploads');  // функция кот вернет путь этого файла
     },
     filename: (_, file, cb) => {
