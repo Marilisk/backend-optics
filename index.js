@@ -8,8 +8,10 @@ import checkAuth from './utils/checkAuth.js';
 import {ProductController, UserController} from './controllers/index.js';
 import handleValidationErrors from "./utils/handleValidationErrors.js";
 
+// 'mongodb+srv://admin:Zxcvbn123@cluster0.kr9exh8.mongodb.net/blog?retryWrites=true&w=majority'
+
 mongoose.connect(
-    'mongodb+srv://admin:Zxcvbn123@cluster0.kr9exh8.mongodb.net/blog?retryWrites=true&w=majority')
+    process.env.MONGODB_URI)
     .then(() => console.log('DB ok'))
     .catch((err) => console.log('DB error', err)
     );
