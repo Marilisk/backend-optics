@@ -1,103 +1,91 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-//import { validationResult } from 'express-validator';
 import UserModel from '../models/UserModel.js';
+import userService from '../services/user-service.js';
+import tokenService from '../services/token-service.js';
 
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
     try {
-        
-        const password = req.body.password;
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(password, salt);
-
-        const doc = new UserModel({
-            email: req.body.email,
-            isManager: req.body.isManager,
-            fullName: req.body.fullName,
-            passwordHash: hash,
-            avatarUrl: req.body.avatarUrl,
-        });
-
-        const user = await doc.save();
-
-        const token = jwt.sign(
-            { _id: user._id, },
-            'secret123',
-            { expiresIn: '30d', },
-        );
-
-        const { passwordHash, ...userData } = user._doc;
-
-        res.json({
-            ...userData,
-            token,
-        });
+        const { email, fullName, password, avatarUrl } = req.body;
+        const userData = await userService.register(email, fullName, password, avatarUrl);
+        res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
+        res.json(userData);
     } catch (error) {
-        console.log(error);
-        if (error.code === 11000) {
-            res.status(404).json({
-                message: 'Вы уже зарегистрированы',
-            })
-        } else {
-            res.status(500).json({
-                message: 'can not register',
-            });
-        } 
+        console.log('register error', error);
+        res.status(500).json({
+            message: 'Cannot register'
+        })
     }
 }
 
 export const login = async (req, res) => {
     try {
-        const user = await UserModel.findOne({ email: req.body.email });
+        const { email, password } = req.body;
+        const userData = await userService.login(email, password);
+        res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
+        res.json(userData);
+    } catch (error) {
+        console.log('login error', error);
+        res.status(500).json({
+            message: 'Cannot login'
+        })
+    }
+}
 
-        if (!user) {
-            return res.status(404).json({
-                message: 'Пользователь не найден',
-            });
-        };
-        const isPassValid = await bcrypt.compare(req.body.password, user._doc.passwordHash);
-        if (!isPassValid) {
-            return res.status(404).json({
-                message: 'неверный логин или пароль',
-            })
-        };
-
-        const token = jwt.sign(
-            { _id: user._id, },
-            'secret123',
-            { expiresIn: '30d', },
-        );
-        const { passwordHash, ...userData } = user._doc;
-
-        res.json({
-            ...userData,
-            token,
-        });
-
+export const activate = async (req, res) => {
+    try {
+        const activationLink = req.params.link;
+        await userService.activate(activationLink);
+        return res.redirect('http://localhost:3000')
 
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            message: 'can not login',
+            message: 'can not activate',
         });
+
     }
 }
 
-export const getMe = async(req, res)=> {
+export const getAllUsers = async (req, res) => {
     try {
-        const user = await UserModel.findById(req.userId);
+        const users = await UserModel.find();
+        res.json(users)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+export const logout = async (req, res, next) => {
+    try {
+        const { refreshToken } = req.cookies;
+        const token = await userService.logout(refreshToken);
+        res.clearCookie('refreshToken');
+        return res.json(token)
+    } catch (error) {
+        console.log('logout error', error);
+        res.status(500).json({
+            message: 'Cannot logout'
+        })
+    }
+}
+
+export const getMe = async (req, res) => {
+    try {
+        //console.log(req.body)
+        const user = await UserModel.findById(req.body.userId);
         if (!user) {
             return res.status(404).json({
                 message: "User doesn't exist",
             })
         }
         const token = jwt.sign(
-            { _id: user._id, },
+            { _id: user._id, role: user.role },
             'secret123',
             { expiresIn: '30d', },
         );
 
-        const{passwordHash, ...userData} = user._doc; 
+        const { passwordHash, ...userData } = user._doc;
         res.json({
             ...userData,
             token,
@@ -106,6 +94,124 @@ export const getMe = async(req, res)=> {
         console.log(error);
         res.status(500).json({
             message: 'no access',
-        });        
+        });
+    }
+}
+
+export const refresh = async (req, res, next) => {
+    try {
+        const { refreshToken } = req.cookies;
+        const userData = jwt.verify(refreshToken, 'jwt-refresh-secret-key');
+        const tokenFromDB = await tokenService.findToken(refreshToken);
+        if (!refreshToken || !userData || !tokenFromDB) {
+            return res.status(401).json({ message: `no token or smthing` });
+        }
+        const user = await UserModel.findById(userData.id);
+        const userPayload = { email: user.email, id: user.id, isActivated: user.isActivated };
+        const tokens = tokenService.generateTokens({ ...userPayload });
+        await tokenService.saveToken(userPayload.id, tokens.refreshToken);
+        res.cookie('refreshToken', tokens.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
+        return res.json({ user, tokens });
+
+    } catch (error) {
+        console.log('refresh error', error)
+        return res.status(500).json({
+            message: 'Cannot refresh'
+        })
+    }
+}
+
+
+export const addToFavorites = async (req, res, next) => {
+    try {
+        console.log('im in addToFavorites userscontroller ', req.user)
+        const productId = req.body.productId;
+        const user = await UserModel.findById(req.user.id);
+        user.favourites.push(productId);
+        await user.save();
+        const result = user.favourites;
+        return res.json(result)
+    } catch (error) {
+        console.log('addToFavorites error', error)
+        return res.status(500).json({
+            message: 'Cannot add To Favorites'
+        })
+    }
+}
+export const removeFromFavorites = async (req, res, next) => {
+    try {
+        const productId = req.body.productId;
+        const user = await UserModel.findById(req.user.id);
+        user.favourites = user.favourites.filter(el => el !== productId);
+        await user.save();
+        const result = user.favourites;
+        return res.json(result)
+    } catch (error) {
+        console.log('removeFromFavorites error', error)
+        res.status(500).json({
+            message: 'Cannot remove From Favorites'
+        })
+
+    }
+}
+
+export const addEyewearToCart = async (req, res, next) => {
+    try {
+        const productId = req.body.productId;
+        const user = await UserModel.findById(req.user.id);
+        const good = user.cart.find(elem => elem.productId === productId)
+        if (good) {
+            //console.log('good ', good)
+            good.quantity += 1;
+        } else {
+            user.cart.push({productId, quantity: 1, leftLens: 1, rightLens: 1, cat: req.body.cat });
+        }
+        await user.save();
+        const result = user.cart;
+        return res.json(result)
+    } catch (error) {
+        console.log('addToFavorites error', error)
+        return res.status(500).json({
+            message: 'Cannot add To Cart'
+        })
+    }
+}
+
+
+export const editCart = async (req, res, next) => {
+    try {
+        //console.log('im in editCart begin', req.body);
+        const user = await UserModel.findById(req.user.id);
+        user.cart = req.body;
+        await user.save();
+        //console.log('im in editCart result ', user.cart)
+        const result = user.cart;
+        return res.json(result)
+    } catch (error) {
+        console.log('addToFavorites error', error)
+        return res.status(500).json({
+            message: 'Cannot add To Cart'
+        })
+    }
+}
+
+export const removeEyewearFromCart = async (req, res, next) => {
+    try {
+        const id = req.body.productId;
+        const user = await UserModel.findById(req.user.id);
+        const good = user.cart.find(elem => elem.productId === id)
+        if (good.quantity > 1) {
+            good.quantity --;
+        } else {
+            user.cart = user.cart.filter(el => el.productId !== id);
+        }
+        await user.save();
+        const result = user.cart;
+        return res.json(result)
+    } catch (error) {
+        console.log('removeFromFavorites error', error)
+        res.status(500).json({
+            message: 'Cannot remove From Cart'
+        })
     }
 }

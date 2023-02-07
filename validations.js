@@ -20,3 +20,8 @@ export const productCreateValidator = [
     body('features', 'неверный формат тегов').optional().isArray(),
     body('options', 'неверный формат опций').optional().isArray(),   
 ];
+
+export const lensesCreateValidator = [
+    body('brand', 'введите название бренда больше 3 симв').isLength({min: 3 }).isString(),
+    body('description', 'введите описание линз больше 5 симв').isLength({min: 5}).isString(),
+];

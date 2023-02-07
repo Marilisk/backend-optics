@@ -1,10 +1,11 @@
 import ProductModel from "../models/ProductModel.js";
 
+
 export const getLastFeatures = async (req, res) => {
     try {
         const products = await ProductModel.find().limit(50).exec(); // limit is for tasking last 5 prods features. exec - method of regexp searches
         const features = products.map(obj => obj.features).flat().slice(0, 5);  // flat - метод массива в котором все элементы вложенных массивов рекурсивно подняты на указанный уровень в скобках
-        
+
         res.json(features);
     } catch (error) {
         console.log(error);
@@ -20,8 +21,8 @@ export const getFeatures = async (req, res) => {
 
         const set = new Set();
         products.map(obj => obj.features).flat() // flat - метод массива в котором все элементы вложенных массивов рекурсивно подняты на указанный уровень в скобках
-            .map (el => set.add(el));  
-        
+            .map(el => set.add(el));
+
         const features = [];
         for (let feature of set) {
             features.push(feature);
@@ -35,21 +36,103 @@ export const getFeatures = async (req, res) => {
         })
     }
 }
+export const getColors = async (req, res) => {
+    try {
+        const products = await ProductModel.find().exec(); // exec - search method of regexp
+
+        const set = new Set();
+        products.map(obj => obj.color).flat() // flat - метод массива в котором все элементы вложенных массивов рекурсивно подняты на указанный уровень в скобках
+            .map(el => set.add(el));
+
+        const colors = [];
+        for (let color of set) {
+            colors.push(color);
+        }
+        //console.log(colors);
+        res.json(colors);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'Cannot get colors'
+        })
+    }
+}
+export const getShapes = async (req, res) => {
+    try {
+        const products = await ProductModel.find().exec(); // exec - search method of regexp
+        const set = new Set();
+        products.map(obj => obj.shape).flat() // flat - метод массива в котором все элементы вложенных массивов рекурсивно подняты на указанный уровень в скобках
+            .map(el => set.add(el));
+        const shapes = [];
+        for (let shape of set) {
+            shapes.push(shape);
+        }
+        //console.log(colors);
+        res.json(shapes);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'Cannot get shapes'
+        })
+    }
+}
+export const getMaterials = async (req, res) => {
+    try {
+        const products = await ProductModel.find().exec(); // exec - search method of regexp
+        const set = new Set();
+        products.map(obj => obj.material).flat() // flat - метод массива в котором все элементы вложенных массивов рекурсивно подняты на указанный уровень в скобках
+            .map(el => set.add(el));
+        const materials = [];
+        for (let material of set) {
+            materials.push(material);
+        }
+        res.json(materials);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'Cannot get materials'
+        })
+    }
+}
+
+
+export const search = async (req, res) => {
+    try {
+        const query = req.body.query;
+        const regex = new RegExp(`${query}`, 'i', 'g');
+        const products = await ProductModel.find({
+            name: {
+                $regex: regex,
+            }, 
+        }).limit(10);
+
+        res.json(products);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'Cannot find products'
+        })
+    }
+}
 
 
 export const create = async (req, res) => {
     try {
+        const userId = req.user.id;
+
         const doc = new ProductModel({
             category: req.body.category,
             name: req.body.name,
             code: req.body.code,
             description: req.body.description,
             price: req.body.price,
+            gender: req.body.gender,
             features: req.body.features,
             options: req.body.options,
             viewsCount: req.body.viewsCount,
             buyCount: req.body.buyCount,
             shape: req.body.shape,
+            color: req.body.color,
             pupillaryDistance: req.body.pupillaryDistance,
             frameWidth: req.body.frameWidth,
             lensWidth: req.body.lensWidth,
@@ -60,8 +143,7 @@ export const create = async (req, res) => {
             material: req.body.material,
             prescriptionMin: req.body.prescriptionMin,
             prescriptionMax: req.body.prescriptionMax,
-            
-            user: req.userId,
+            user: userId,
             imageUrl: req.body.imageUrl,
         });
 
@@ -87,12 +169,27 @@ export const getAll = async (req, res) => {
         })
     }
 }
+export const getFilteredProducts = async (req, res) => {
+    try {
+        //console.log(req.body);
+        const filterName = req.body.filterName;
+        const filterOption = req.body.filterOption;
+        const products = await ProductModel.find({ [filterName]: `${filterOption}` }).limit(9)
+            .populate('user').exec(); //последние два метода нужны чтобы получить не только айди продукта, но и его данные все
+        res.json(products);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'cannot get products',
+        })
+    }
+}
 
 export const getOne = async (req, res) => {
     try {
-        const postId = req.params.id;
-        ProductModel.findOneAndUpdate({ // метод в монгуз, который помогает не только получить один объект, но и обноваить просмотры этой статьи
-            _id: postId,
+        const Id = req.params.id;
+        ProductModel.findOneAndUpdate({ 
+            _id: Id,
         },
             { $inc: { viewsCount: 1 }, }, // что увеличиваем
             { returnDocument: 'after', }, // возвращаем документ уже после инкриза вьюкаунт
@@ -100,13 +197,13 @@ export const getOne = async (req, res) => {
                 if (err) {
                     console.log(err);
                     return res.status(500).json({
-                        message: 'не удалось вернуть статью',
+                        message: 'не удалось показать товар',
                     })
                 }
 
                 if (!doc) {
                     return res.status(404).json({
-                        message: 'статья не найдена',
+                        message: 'товар не найден',
                     });
                 }
 
@@ -116,7 +213,7 @@ export const getOne = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            message: 'cannot get articles',
+            message: 'товар не найден',
         })
     }
 };
@@ -130,13 +227,13 @@ export const remove = async (req, res) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({
-                    message: 'не получилось удалить статью',
+                    message: 'не получилось удалить продукт',
                 });
             }
 
             if (!doc) {
                 return res.status(404).json({
-                    message: 'удаляемая статья не найдена',
+                    message: 'удаляемый продукт не найден',
                 })
             }
 
@@ -148,7 +245,7 @@ export const remove = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            message: 'cannot delete article',
+            message: 'cannot delete product',
         })
     }
 }
@@ -157,19 +254,32 @@ export const remove = async (req, res) => {
 export const update = async (req, res) => {
     try {
         const postId = req.params.id;
-        console.log(postId);
         await ProductModel.updateOne({ _id: postId },
             {
-                name: req.body.name,
-                text: req.body.text,
-                price: req.body.price,
                 category: req.body.category,
+                name: req.body.name,
+                code: req.body.code,
+                description: req.body.description,
+                price: req.body.price,
+                gender: req.body.gender,
                 features: req.body.features,
                 options: req.body.options,
+                viewsCount: req.body.viewsCount,
                 buyCount: req.body.buyCount,
-                photos: req.body.photos,
-                user: req.userId,
-                mainImageUrl: req.body.imageUrl,
+                shape: req.body.shape,
+                color: req.body.color,
+                pupillaryDistance: req.body.pupillaryDistance,
+                frameWidth: req.body.frameWidth,
+                lensWidth: req.body.lensWidth,
+                bridge: req.body.bridge,
+                templeLength: req.body.templeLength,
+                lensHeight: req.body.lensHeight,
+                weight: req.body.weight,
+                material: req.body.material,
+                prescriptionMin: req.body.prescriptionMin,
+                prescriptionMax: req.body.prescriptionMax,
+                user: req.user._id,
+                imageUrl: req.body.imageUrl,
             },
         );
 
@@ -184,3 +294,8 @@ export const update = async (req, res) => {
         })
     }
 }
+
+
+
+
+

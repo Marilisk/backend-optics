@@ -23,7 +23,10 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    
+    gender: {
+        type: Array,
+        required: true,
+    },    
     features: {
         type: Array,
         default: [],
@@ -41,11 +44,15 @@ const ProductSchema = new mongoose.Schema({
         default: 0,
     },
     shape: {
-        type: String,
+        type: Array,
+        required: true,
+    },
+    color: {
+        type: Array,
         required: true,
     },
     pupillaryDistance: {
-        type: String,
+        type: Array,
         required: true,
     },
     frameWidth: {
@@ -74,7 +81,7 @@ const ProductSchema = new mongoose.Schema({
     },
 
     material: {
-        type: String,
+        type: Array,
         required: true,
     },
     prescriptionMin: {
@@ -93,6 +100,7 @@ const ProductSchema = new mongoose.Schema({
     },
     
     imageUrl: {
+        /* required: true, */
         type: Object,
     },  
 }, 

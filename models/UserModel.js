@@ -1,25 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, {Schema} from "mongoose";
 
 const UserSchema = new mongoose.Schema({
-    fullName: {
-        type: String,
-        required: true,
-    },
-    isManager: {
-        type: Boolean,
-        required: true,
-        default: false,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    passwordHash: {
-        type: String,
-        required: true,
-    },
+    email: { type: String, required: true, unique: true, },
+    fullName: { type: String, required: true, },
+    password: { type: String, required: true,  },
+    activationLink: { type: String },
+    role: {type: String, default: 'USER', /* ref: 'Role' */},
+    isActivated: { type: Boolean, default: false, },
     avatarUrl: String,  //здесь пишет только тип, потому что других параметров нет
+    cart: [],
+    //totalCartSum: [],
+    favourites: [],
+    orders: {type: Array, default: []},
 }, 
 {
     timestamps: true, // прикручием дату создания и обновления сущности
