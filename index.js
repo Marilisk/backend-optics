@@ -39,7 +39,7 @@ app.use(cookieParser());
 app.use('/uploads', express.static('uploads')); // чтобы при запросах на аплоад экспресс поняла чаво показывать в папкек аплоадс 
 
 app.use(cors({
-    //credentials: true,
+    credentials: true,
     origin: true, 
     //origin: ['https://optis-oxnt4pacc-marilisk.vercel.app/', 'http://localhost:3000/', /\.vercel\.app$/], 
 }));
