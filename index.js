@@ -13,10 +13,7 @@ import cookieParser from "cookie-parser";
 
 
 
-mongoose.connect(
-    process.env.MONGODB_URI
-    )   
-    
+mongoose.connect(process.env.MONGODB_URI)   
     .then(() => console.log('DB ok'))
     .catch((err) => console.log('DB error', err)
     );
@@ -36,14 +33,14 @@ const storage = multer.diskStorage({  // создаём хранилище дл�
 });
 const upload = multer({storage});
 
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
+/* process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0; */
 
 app.use(express.json());  //чтобы экпресс понял формат json
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads')); // чтобы при запросах на аплоад экспресс поняла чаво показывать в папкек аплоадс 
 app.use(cors({
     credentials: true,
-    origin: process.env.CLIENT_URL /* 'http://localhost:3000' */,
+    origin: 'https://optis.vercel.app' /* 'http://localhost:3000' */,
 }));
 
 // AUTHENTIFICATION. USER METHODS
