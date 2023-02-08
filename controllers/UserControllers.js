@@ -7,7 +7,7 @@ export const register = async (req, res, next) => {
     try {
         const { email, fullName, password, avatarUrl } = req.body;
         const userData = await userService.register(email, fullName, password, avatarUrl);
-        res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
+        res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true })
         res.json(userData);
     } catch (error) {
         console.log('register error', error);
@@ -111,7 +111,7 @@ export const refresh = async (req, res, next) => {
         const userPayload = { email: user.email, id: user.id, isActivated: user.isActivated };
         const tokens = tokenService.generateTokens({ ...userPayload });
         await tokenService.saveToken(userPayload.id, tokens.refreshToken);
-        res.cookie('refreshToken', tokens.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
+        res.cookie('refreshToken', tokens.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true })
         return res.json({ user, tokens });
 
     } catch (error) {
