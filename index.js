@@ -42,9 +42,13 @@ app.use(cors({
     credentials: true,
     //origin: true, 
     origin: ['https://optis-oxnt4pacc-marilisk.vercel.app/', 'http://localhost:3000/', /\.vercel\.app$/, /\.localhost\.$/], 
+    allowedHeaders:  ['Content-Type', 'Authorization'],
+    methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD'],
+    //preflightContinue: true,
+
 }));
 
-app.use(cors());
+//app.use(cors());
 
 // AUTHENTIFICATION. USER METHODS
 app.post('/auth/login', loginValidator, handleValidationErrors, UserController.login);
