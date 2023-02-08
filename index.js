@@ -37,17 +37,12 @@ const upload = multer({ storage });
 app.use(express.json());  //чтобы экпресс понял формат json
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads')); // чтобы при запросах на аплоад экспресс поняла чаво показывать в папкек аплоадс 
-app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();});
-/* app.use(cors({
+
+app.use(cors({
     //credentials: true,
-    origin: '*', 
+    origin: true, 
     //origin: ['https://optis-oxnt4pacc-marilisk.vercel.app/', 'http://localhost:3000/', /\.vercel\.app$/], 
-})); */
+}));
 
 app.use(cors());
 
