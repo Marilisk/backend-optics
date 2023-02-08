@@ -40,8 +40,8 @@ app.use('/uploads', express.static('uploads')); // чтобы при запро�
 
 app.use(cors({
     credentials: true,
-    origin: true, 
-    // origin: ['https://optis-oxnt4pacc-marilisk.vercel.app/', 'http://localhost:3000/'], 
+    //origin: true, 
+    origin: ['https://optis-oxnt4pacc-marilisk.vercel.app/', 'http://localhost:3000/', /\.vercel\.app$/], 
 }));
 
 // AUTHENTIFICATION. USER METHODS
