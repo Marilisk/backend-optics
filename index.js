@@ -110,7 +110,7 @@ app.delete('/lenses/:id', authMiddleware, roleMiddleWare('ADMIN'), LensesControl
 app.patch('/lenses/:id', authMiddleware, roleMiddleWare('ADMIN'), LensesController.update);
 
 
-app.listen(process.env.PORT || 3000 /* 4444 */, (err) => {
+app.listen(process.env.PORT || 4444, (err) => {
     if (err) {
         return console.log(err);
     }
