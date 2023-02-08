@@ -39,12 +39,11 @@ app.use(express.json());  //чтобы экпресс понял формат js
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads')); // чтобы при запросах на аплоад экспресс поняла чаво показывать в папкек аплоадс 
 
-const allowedOrigins = ['https://optis-oxnt4pacc-marilisk.vercel.app', 'http://localhost:3000']
+//const allowedOrigins = ['https://optis-oxnt4pacc-marilisk.vercel.app', 'http://localhost:3000']
 app.use(cors({
     credentials: true,
-    origin: function (origin, callback) {
-        // allow requests with no origin 
-        // (like mobile apps or curl requests)
+    /* origin: function (origin, callback) {
+        
         if (!origin) return callback(null, true);
         if (allowedOrigins.indexOf(origin) === -1) {
             let msg = 'The CORS policy for this site does not ' +
@@ -52,7 +51,7 @@ app.use(cors({
             return callback(new Error(msg), false);
         }
         return callback(null, true);
-    }
+    } */
 }));
 
 // AUTHENTIFICATION. USER METHODS
