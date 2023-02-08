@@ -160,11 +160,12 @@ export const addEyewearToCart = async (req, res, next) => {
         const productId = req.body.productId;
         const user = await UserModel.findById(req.user.id);
         const good = user.cart.find(elem => elem.productId === productId)
+        //const lens = req.body.cat === 'contactLens' ? req.body
         if (good) {
             //console.log('good ', good)
             good.quantity += 1;
         } else {
-            user.cart.push({productId, quantity: 1, leftLens: 1, rightLens: 1, cat: req.body.cat });
+            user.cart.push({productId, quantity: 1, leftLens: req.body.lens, rightLens: req.body.lens, cat: req.body.cat });
         }
         await user.save();
         const result = user.cart;
@@ -199,14 +200,14 @@ export const removeEyewearFromCart = async (req, res, next) => {
     try {
         const id = req.body.productId;
         const user = await UserModel.findById(req.user.id);
-        const good = user.cart.find(elem => elem.productId === id)
-        if (good.quantity > 1) {
-            good.quantity --;
-        } else {
-            user.cart = user.cart.filter(el => el.productId !== id);
-        }
-        await user.save();
-        const result = user.cart;
+        const renewedCart = user.cart.filter(el => el.productId !== id)
+        const renewedUser = await UserModel.findByIdAndUpdate({ _id: req.user.id }, {
+            cart: renewedCart,
+        },
+            { returnDocument: 'after', },);
+
+
+        const result = renewedUser.cart;
         return res.json(result)
     } catch (error) {
         console.log('removeFromFavorites error', error)
