@@ -38,11 +38,13 @@ app.use(express.json());  //чтобы экпресс понял формат js
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads')); // чтобы при запросах на аплоад экспресс поняла чаво показывать в папкек аплоадс 
 
-app.use(cors({
+/* app.use(cors({
     credentials: true,
-    //origin: true, 
-    origin: ['https://optis-oxnt4pacc-marilisk.vercel.app/', 'http://localhost:3000/', /\.vercel\.app$/], 
-}));
+    origin: true, 
+    //origin: ['https://optis-oxnt4pacc-marilisk.vercel.app/', 'http://localhost:3000/', /\.vercel\.app$/], 
+})); */
+
+app.use(cors());
 
 // AUTHENTIFICATION. USER METHODS
 app.post('/auth/login', loginValidator, handleValidationErrors, UserController.login);
