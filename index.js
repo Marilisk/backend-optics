@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import cors from 'cors';
 import { registerValidator, loginValidator, productCreateValidator, lensesCreateValidator } from './validations.js';
 import checkAuth from './utils/checkAuth.js';
-import {LensesController, OrderController, ProductController, UserController} from './controllers/index.js';
+import { LensesController, OrderController, ProductController, UserController } from './controllers/index.js';
 import handleValidationErrors from "./utils/handleValidationErrors.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
 import roleMiddleWare from "./middlewares/roleMiddleWare.js";
@@ -13,7 +13,7 @@ import cookieParser from "cookie-parser";
 
 
 
-mongoose.connect(process.env.MONGODB_URI)   
+mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('DB ok'))
     .catch((err) => console.log('DB error', err)
     );
@@ -31,16 +31,28 @@ const storage = multer.diskStorage({  // создаём хранилище дл�
         cb(null, file.originalname);
     },
 });
-const upload = multer({storage});
+const upload = multer({ storage });
 
 /* process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0; */
 
 app.use(express.json());  //чтобы экпресс понял формат json
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads')); // чтобы при запросах на аплоад экспресс поняла чаво показывать в папкек аплоадс 
+
+const allowedOrigins = ['https://optis-oxnt4pacc-marilisk.vercel.app', 'http://localhost:3000']
 app.use(cors({
     credentials: true,
-    origin: 'https://optis.vercel.app' /* 'http://localhost:3000' */,
+    origin: function (origin, callback) {
+        // allow requests with no origin 
+        // (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            let msg = 'The CORS policy for this site does not ' +
+                'allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    }
 }));
 
 // AUTHENTIFICATION. USER METHODS
