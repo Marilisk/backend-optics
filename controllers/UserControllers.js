@@ -179,13 +179,11 @@ export const addEyewearToCart = async (req, res, next) => {
 }
 
 
-export const editCart = async (req, res, next) => {
+export const editCart = async (req, res) => {
     try {
-        //console.log('im in editCart begin', req.body);
         const user = await UserModel.findById(req.user.id);
         user.cart = req.body;
         await user.save();
-        //console.log('im in editCart result ', user.cart)
         const result = user.cart;
         return res.json(result)
     } catch (error) {
@@ -196,7 +194,7 @@ export const editCart = async (req, res, next) => {
     }
 }
 
-export const removeEyewearFromCart = async (req, res, next) => {
+export const removeEyewearFromCart = async (req, res) => {
     try {
         const id = req.body.productId;
         const user = await UserModel.findById(req.user.id);

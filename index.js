@@ -11,11 +11,12 @@ import authMiddleware from "./middlewares/authMiddleware.js";
 import roleMiddleWare from "./middlewares/roleMiddleWare.js";
 import cookieParser from "cookie-parser";
 
-// 'mongodb+srv://admin:Zxcvbn123@cluster0.kr9exh8.mongodb.net/blog?retryWrites=true&w=majority'
+
 
 mongoose.connect(
-    //process.env.MONGODB_URI)   - включить при делпое на рендере
-    'mongodb+srv://admin:Zxcvbn123@cluster0.kr9exh8.mongodb.net/blog?retryWrites=true&w=majority')
+    process.env.MONGODB_URI
+    )   
+    
     .then(() => console.log('DB ok'))
     .catch((err) => console.log('DB error', err)
     );
@@ -42,9 +43,8 @@ app.use(cookieParser());
 app.use('/uploads', express.static('uploads')); // чтобы при запросах на аплоад экспресс поняла чаво показывать в папкек аплоадс 
 app.use(cors({
     credentials: true,
-    origin: /* process.env.CLIENT_URL */ 'http://localhost:3000',
+    origin: process.env.CLIENT_URL /* 'http://localhost:3000' */,
 }));
-//app.use(errorMiddleWare());
 
 // AUTHENTIFICATION. USER METHODS
 app.post('/auth/login', loginValidator, handleValidationErrors, UserController.login);
