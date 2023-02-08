@@ -44,7 +44,7 @@ app.use(cors({
     origin: ['https://optis-oxnt4pacc-marilisk.vercel.app/', 'http://localhost:3000/', /\.vercel\.app$/, /\.localhost\.$/], 
     allowedHeaders:  ['Content-Type', 'Authorization'],
     methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD'],
-    //preflightContinue: true,
+    preflightContinue: true,
 
 }));
 
