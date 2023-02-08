@@ -12,7 +12,6 @@ import roleMiddleWare from "./middlewares/roleMiddleWare.js";
 import cookieParser from "cookie-parser";
 
 
-
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('DB ok'))
     .catch((err) => console.log('DB error', err)
@@ -39,19 +38,10 @@ app.use(express.json());  //чтобы экпресс понял формат js
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads')); // чтобы при запросах на аплоад экспресс поняла чаво показывать в папкек аплоадс 
 
-//const allowedOrigins = ['https://optis-oxnt4pacc-marilisk.vercel.app', 'http://localhost:3000']
 app.use(cors({
     credentials: true,
-    /* origin: function (origin, callback) {
-        
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            let msg = 'The CORS policy for this site does not ' +
-                'allow access from the specified Origin.';
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    } */
+    origin: false, 
+    // origin: ['https://optis-oxnt4pacc-marilisk.vercel.app/', 'http://localhost:3000/'], 
 }));
 
 // AUTHENTIFICATION. USER METHODS
