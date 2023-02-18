@@ -12,7 +12,8 @@ import roleMiddleWare from "./middlewares/roleMiddleWare.js";
 import cookieParser from "cookie-parser";
 
 
-mongoose.connect(MONGODB_URI)
+//mongoose.connect(MONGODB_URI)
+mongoose.connect('mongodb+srv://admin:Zxcvbn123@cluster0.kr9exh8.mongodb.net/blog?retryWrites=true&w=majority')
     .then(() => console.log('DB ok'))
     .catch((err) => console.log('DB error', err)
     );
