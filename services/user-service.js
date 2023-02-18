@@ -23,12 +23,10 @@ class UserService {
                                              avatarUrl})
         await mailService.sendActivationMail(email, `http://localhost:4444/auth/activate/${activationLink}`);
         const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated};
-        //const tokens = tokenService.generateTokens({tokensPayload});
         const accessToken = jwt.sign(tokensPayload, 'jwt-secret-key', {expiresIn: '15m'})
         const refreshToken = jwt.sign(tokensPayload, 'jwt-refresh-secret-key', {expiresIn: '180d'});
         const tokens = {accessToken, refreshToken};
         await tokenService.saveToken(tokensPayload.id, tokens.refreshToken);
-        //console.log('userservice 28 user &&&&&&&&&&&&&&&&&&&&' , user);
         return { ...tokens, user }
     }
 
@@ -58,8 +56,6 @@ class UserService {
         const tokens = {accessToken, refreshToken};
 
         await tokenService.saveToken(user.id, refreshToken);
-        //console.log('userservice 59 user &&&&&&&&&&&&&&&&&&&& ', user);
-        //console.log('userservice 59 tokens &&&&&&&&&&&&&&&&&&&& ', tokens);
         return { ...tokens, user }
     }
 

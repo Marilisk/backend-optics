@@ -3,7 +3,7 @@ import multer from "multer";
 import fs from 'fs';
 import mongoose from "mongoose";
 import cors from 'cors';
-import { registerValidator, loginValidator, productCreateValidator, lensesCreateValidator } from './validations.js';
+import { registerValidator, loginValidator } from './validations.js';
 import checkAuth from './utils/checkAuth.js';
 import { LensesController, OrderController, ProductController, UserController } from './controllers/index.js';
 import handleValidationErrors from "./utils/handleValidationErrors.js";
@@ -12,7 +12,7 @@ import roleMiddleWare from "./middlewares/roleMiddleWare.js";
 import cookieParser from "cookie-parser";
 
 
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect('mongodb+srv://admin:Zxcvbn123@cluster0.kr9exh8.mongodb.net/blog?retryWrites=true&w=majority')
     .then(() => console.log('DB ok'))
     .catch((err) => console.log('DB error', err)
     );
@@ -34,7 +34,7 @@ const upload = multer({ storage });
 
 /* process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0; */
 
-app.use(express.json());  //чтобы экпресс понял формат json
+app.use(express.json()); 
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads')); // чтобы при запросах на аплоад экспресс поняла чаво показывать в папкек аплоадс 
 
@@ -48,7 +48,6 @@ app.use(cors({
 
 }));
 
-//app.use(cors());
 
 // AUTHENTIFICATION. USER METHODS
 app.post('/auth/login', loginValidator, handleValidationErrors, UserController.login);

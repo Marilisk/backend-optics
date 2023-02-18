@@ -125,7 +125,6 @@ export const refresh = async (req, res, next) => {
 
 export const addToFavorites = async (req, res, next) => {
     try {
-        console.log('im in addToFavorites userscontroller ', req.user)
         const productId = req.body.productId;
         const user = await UserModel.findById(req.user.id);
         user.favourites.push(productId);
@@ -161,9 +160,7 @@ export const addEyewearToCart = async (req, res, next) => {
         const productId = req.body.productId;
         const user = await UserModel.findById(req.user.id);
         const good = user.cart.find(elem => elem.productId === productId)
-        //const lens = req.body.cat === 'contactLens' ? req.body
         if (good) {
-            //console.log('good ', good)
             good.quantity += 1;
         } else {
             user.cart.push({productId, quantity: 1, leftLens: req.body.lens, rightLens: req.body.lens, cat: req.body.cat });
