@@ -8,8 +8,7 @@
   },
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "start:dev": "nodemon index.js"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
