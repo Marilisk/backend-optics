@@ -6,6 +6,10 @@ import tokenService from '../services/token-service.js';
 export const register = async (req, res, next) => {
     try {
         const { email, fullName, password, avatarUrl } = req.body;
+        const candidate = await UserModel.findOne({email})
+        if (candidate) {
+            return res.status(400).json({message: `Email ${email} is already taken`});
+        }
         const userData = await userService.register(email, fullName, password, avatarUrl);
         res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true })
         res.json(userData);
@@ -36,7 +40,7 @@ export const activate = async (req, res) => {
     try {
         const activationLink = req.params.link;
         await userService.activate(activationLink);
-        return res.redirect('http://localhost:3000')
+        return res.redirect('https://optis.vercel.app/')
 
     } catch (error) {
         console.log(error);

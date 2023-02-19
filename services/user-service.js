@@ -8,10 +8,6 @@ import jwt from "jsonwebtoken";
 class UserService {
 
     async register(email, fullName, password, avatarUrl) {
-        const candidate = await UserModel.findOne({email})
-        if (candidate) {
-            return res.status(400).json({message: `Email ${email} is already taken`});
-        }
         const salt = await bcrypt.genSalt(3)
         const hashPassword = await bcrypt.hash(password, salt)
         const activationLink = uuidv4();
@@ -21,7 +17,7 @@ class UserService {
                                              activationLink, 
                                              role: 'USER', 
                                              avatarUrl})
-        await mailService.sendActivationMail(email, `http://localhost:4444/auth/activate/${activationLink}`);
+        await mailService.sendActivationMail(email, `https://backend-optics-production.up.railway.app/${activationLink}`);
         const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated};
         const accessToken = jwt.sign(tokensPayload, 'jwt-secret-key', {expiresIn: '15m'})
         const refreshToken = jwt.sign(tokensPayload, 'jwt-refresh-secret-key', {expiresIn: '180d'});
