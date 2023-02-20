@@ -37,20 +37,11 @@ class UserService {
         await user.save()
     }
 
-    async login(email, password) {
-        const user = await UserModel.findOne({email})
-        if (!user) {
-            return res.status(400).json({message: `account with email ${email} doesnt exist`});
-        }
-        const isPassValid = await bcrypt.compare(password, user.password);
-        if (!isPassValid) {
-            return res.status(400).json({message: 'неверный логин или пароль'})
-        }
+    async login(user) {
         const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated};
         const accessToken = jwt.sign(tokensPayload, 'jwt-secret-key', {expiresIn: '15m'})
         const refreshToken = jwt.sign(tokensPayload, 'jwt-refresh-secret-key', {expiresIn: '180d'});
         const tokens = {accessToken, refreshToken};
-
         await tokenService.saveToken(user.id, refreshToken);
         return { ...tokens, user }
     }

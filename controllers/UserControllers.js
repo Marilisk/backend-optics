@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 import UserModel from '../models/UserModel.js';
 import userService from '../services/user-service.js';
 import tokenService from '../services/token-service.js';
+import bcrypt from 'bcrypt';
+
 
 export const register = async (req, res, next) => {
     try {
@@ -24,6 +26,14 @@ export const register = async (req, res, next) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        const user = await TokioUserModel.findOne({email})
+        if (!user) {
+            return res.status(400).json({message: `account with email ${email} doesnt exist`});
+        }
+        const isPassValid = await bcrypt.compare(password, user.password);
+        if (!isPassValid) {
+            return res.status(400).json({message: 'неверный логин или пароль'})
+        }
         const userData = await userService.login(email, password);
         res.cookie('refreshToken', userData.refreshToken, 
             { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true })
@@ -41,7 +51,6 @@ export const activate = async (req, res) => {
         const activationLink = req.params.link;
         await userService.activate(activationLink);
         return res.redirect('https://optis.vercel.app/')
-
     } catch (error) {
         console.log(error);
         res.status(500).json({
