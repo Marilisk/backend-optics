@@ -26,7 +26,7 @@ export const register = async (req, res, next) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await TokioUserModel.findOne({email})
+        const user = await UserModel.findOne({email})
         if (!user) {
             return res.status(400).json({message: `account with email ${email} doesnt exist`});
         }
