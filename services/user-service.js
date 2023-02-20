@@ -4,6 +4,11 @@ import mailService from "./mail-service.js";
 import tokenService from "./token-service.js";
 import UserModel from '../models/UserModel.js';
 import jwt from "jsonwebtoken";
+import dotenv from 'dotenv';
+dotenv.config();
+
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET
 
 class UserService {
 
@@ -19,11 +24,27 @@ class UserService {
                                              avatarUrl})
         await mailService.sendActivationMail(email, `https://backend-optics-production.up.railway.app/${activationLink}`);
         const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated};
-        const accessToken = jwt.sign(tokensPayload, 'jwt-secret-key', {expiresIn: '15m'})
-        const refreshToken = jwt.sign(tokensPayload, 'jwt-refresh-secret-key', {expiresIn: '180d'});
+        
+        const accessToken = jwt.sign(tokensPayload, JWT_ACCESS_SECRET, {expiresIn: '15m'})
+        const refreshToken = jwt.sign(tokensPayload, JWT_REFRESH_SECRET, {expiresIn: '180d'});
         const tokens = {accessToken, refreshToken};
         await tokenService.saveToken(tokensPayload.id, tokens.refreshToken);
         return { ...tokens, user }
+    }
+
+    async login(user) {
+        const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated};
+        console.log('&&&&&&&&&&&', process.env)
+        const accessToken = jwt.sign(tokensPayload, JWT_ACCESS_SECRET, {expiresIn: '15m'})
+        const refreshToken = jwt.sign(tokensPayload, JWT_REFRESH_SECRET, {expiresIn: '180d'});
+        const tokens = {accessToken, refreshToken};
+        await tokenService.saveToken(user.id, refreshToken);
+        return { ...tokens, user }
+    }
+
+    async logout(refreshToken) {
+        const token = await tokenService.removeToken(refreshToken);
+        return token;
     }
 
     async activate(activationLink) {
@@ -35,20 +56,6 @@ class UserService {
         }
         user.isActivated = true;
         await user.save()
-    }
-
-    async login(user) {
-        const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated};
-        const accessToken = jwt.sign(tokensPayload, 'jwt-secret-key', {expiresIn: '15m'})
-        const refreshToken = jwt.sign(tokensPayload, 'jwt-refresh-secret-key', {expiresIn: '180d'});
-        const tokens = {accessToken, refreshToken};
-        await tokenService.saveToken(user.id, refreshToken);
-        return { ...tokens, user }
-    }
-
-    async logout(refreshToken) {
-        const token = await tokenService.removeToken(refreshToken);
-        return token;
     }
 
 }

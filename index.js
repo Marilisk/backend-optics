@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from "express";
 import multer from "multer";
 import fs from 'fs';
@@ -12,8 +14,7 @@ import roleMiddleWare from "./middlewares/roleMiddleWare.js";
 import cookieParser from "cookie-parser";
 
 
-//mongoose.connect(MONGODB_URI)
-mongoose.connect('mongodb+srv://admin:Zxcvbn123@cluster0.kr9exh8.mongodb.net/blog?retryWrites=true&w=majority')
+mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('DB ok'))
     .catch((err) => console.log('DB error', err)
     );
