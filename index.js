@@ -94,7 +94,6 @@ app.get('/color', ProductController.getColors);
 app.get('/shape', ProductController.getShapes);
 app.get('/material', ProductController.getMaterials);
 
-
 app.post('/products', authMiddleware, roleMiddleWare('ADMIN'), ProductController.create);
 app.get('/products/:id', ProductController.getOne);
 app.delete('/products/:id', authMiddleware, roleMiddleWare('ADMIN'), ProductController.remove);

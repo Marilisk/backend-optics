@@ -5,7 +5,6 @@ export default (req, res, next) => {
     
     try {
         const authorisationHeader = req.headers.authorization;
-        //console.log('i m in authmiddleware', req.headers);
         if (!authorisationHeader) {
             return res.status(401).json({message: `no authorisationHeader`});
         }
@@ -14,8 +13,7 @@ export default (req, res, next) => {
             return res.status(401).json({message: `no accessToken`});
         }
         const userData = tokenService.validateAccessToken(accessToken);
-        //console.log('im in auth middleware ', userData)
-
+        
         if (!userData) {
             return res.status(401).json({message: `no userData`});
         }

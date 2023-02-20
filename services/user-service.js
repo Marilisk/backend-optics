@@ -24,7 +24,6 @@ class UserService {
                                              avatarUrl})
         await mailService.sendActivationMail(email, `https://backend-optics-production.up.railway.app/${activationLink}`);
         const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated};
-        
         const accessToken = jwt.sign(tokensPayload, JWT_ACCESS_SECRET, {expiresIn: '15m'})
         const refreshToken = jwt.sign(tokensPayload, JWT_REFRESH_SECRET, {expiresIn: '180d'});
         const tokens = {accessToken, refreshToken};
@@ -34,7 +33,6 @@ class UserService {
 
     async login(user) {
         const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated};
-        console.log('&&&&&&&&&&&', process.env)
         const accessToken = jwt.sign(tokensPayload, JWT_ACCESS_SECRET, {expiresIn: '15m'})
         const refreshToken = jwt.sign(tokensPayload, JWT_REFRESH_SECRET, {expiresIn: '180d'});
         const tokens = {accessToken, refreshToken};

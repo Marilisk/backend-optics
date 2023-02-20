@@ -1,16 +1,21 @@
 import TokenModel from "../models/TokenModel.js";
 import jwt from "jsonwebtoken";
+import dotenv from 'dotenv';
+dotenv.config();
+
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET
 
 class TokenService {
     generateTokens(payload) {
-        const accessToken = jwt.sign(payload, 'jwt-secret-key', {expiresIn: '15m'})
-        const refreshToken = jwt.sign(payload, 'jwt-refresh-secret-key', {expiresIn: '180d'})
+        const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, {expiresIn: '15m'})
+        const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {expiresIn: '180d'})
         return { accessToken, refreshToken }
     }
 
     validateAccessToken(token) {
         try {
-            const userData = jwt.verify(token, 'jwt-secret-key' )
+            const userData = jwt.verify(token, JWT_ACCESS_SECRET )
             return userData;
         } catch (error) {
             return null; 
@@ -19,7 +24,7 @@ class TokenService {
 
     validateRefreshToken(token) {
         try {
-            const userData = jwt.verify(token, 'jwt-refresh-secret-key').tokensPayload;
+            const userData = jwt.verify(token, JWT_REFRESH_SECRET).tokensPayload;
             return userData;
         } catch (error) {
             return null; 
