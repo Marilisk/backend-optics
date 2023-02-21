@@ -78,7 +78,7 @@ const LensSchema = new mongoose.Schema({
     },
     material: {
         type: String,
-        required: 'cиликон-гидрогелевые',
+        default: 'cиликон-гидрогелевые',
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,

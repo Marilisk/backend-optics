@@ -32,7 +32,7 @@ class UserService {
     }
 
     async login(user) {
-        const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated};
+        const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated, role: user.role};
         const accessToken = jwt.sign(tokensPayload, JWT_ACCESS_SECRET, {expiresIn: '15m'})
         const refreshToken = jwt.sign(tokensPayload, JWT_REFRESH_SECRET, {expiresIn: '180d'});
         const tokens = {accessToken, refreshToken};

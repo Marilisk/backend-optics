@@ -34,8 +34,6 @@ const storage = multer.diskStorage({  // создаём хранилище дл�
 });
 const upload = multer({ storage });
 
-/* process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0; */
-
 app.use(express.json()); 
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads')); // чтобы при запросах на аплоад экспресс поняла чаво показывать в папкек аплоадс 
