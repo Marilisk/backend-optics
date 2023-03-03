@@ -48,7 +48,6 @@ export const getColors = async (req, res) => {
         for (let color of set) {
             colors.push(color);
         }
-        //console.log(colors);
         res.json(colors);
     } catch (error) {
         console.log(error);
@@ -67,7 +66,6 @@ export const getShapes = async (req, res) => {
         for (let shape of set) {
             shapes.push(shape);
         }
-        //console.log(colors);
         res.json(shapes);
     } catch (error) {
         console.log(error);

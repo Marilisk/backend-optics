@@ -34,12 +34,7 @@ export const login = async (req, res) => {
         if (!isPassValid) {
             return res.status(400).json({message: 'неверный логин или пароль'})
         }
-        const userData = await userService.login(user);
-
-
-
-
-        
+        const userData = await userService.login(user);      
         res.cookie('refreshToken', userData.refreshToken, 
             { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true })
         res.json(userData);

@@ -7,11 +7,12 @@ import mongoose from "mongoose";
 import cors from 'cors';
 import { registerValidator, loginValidator } from './validations.js';
 import checkAuth from './utils/checkAuth.js';
-import { LensesController, OrderController, ProductController, UserController } from './controllers/index.js';
+import { LensesController, OrderController, ProductController, UploadsController, UserController } from './controllers/index.js';
 import handleValidationErrors from "./utils/handleValidationErrors.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
 import roleMiddleWare from "./middlewares/roleMiddleWare.js";
 import cookieParser from "cookie-parser";
+import { promisify } from 'util';
 
 
 mongoose.connect(process.env.MONGODB_URI)
@@ -32,7 +33,7 @@ const storage = multer.diskStorage({  // создаём хранилище дл�
         cb(null, file.originalname);
     },
 });
-const upload = multer({ storage });
+
 
 app.use(express.json()); 
 app.use(cookieParser());
@@ -41,12 +42,22 @@ app.use('/uploads', express.static('uploads')); // чтобы при запро�
 app.use(cors({
     credentials: true,
     origin: true, 
-    //origin: ['https://optis-oxnt4pacc-marilisk.vercel.app/', 'http://localhost:3000/', /\.vercel\.app$/, /\.localhost\.$/], 
     allowedHeaders:  ['Content-Type', 'Authorization'],
     methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD'],
     preflightContinue: true,
-
 }));
+
+// files in uploads folder
+const upload = multer({ storage });
+app.post('/upload', roleMiddleWare('ADMIN'), upload.single('image'), (req, res) => {
+    res.json({
+        url: `/uploads/${req.file.originalname}`,
+    });
+})
+
+app.get('/photos', /* roleMiddleWare('ADMIN'),  */UploadsController.getAllFiles)
+app.get('/photos/owner/:name', roleMiddleWare('ADMIN'), UploadsController.getOwner)
+app.delete('/photos/:name', roleMiddleWare('ADMIN'), UploadsController.deletePhoto)
 
 
 // AUTHENTIFICATION. USER METHODS
@@ -73,15 +84,13 @@ app.post('/confirmorder', authMiddleware, OrderController.confirm)
 app.get('/order/:id', authMiddleware, OrderController.getOne);
 app.delete('/order/:id', authMiddleware, OrderController.deleteOrder);
 
+app.get('/orders', roleMiddleWare('ADMIN'), OrderController.getAllOrders);
+
 app.patch('/adminorder/:id', roleMiddleWare('ADMIN'), handleValidationErrors, OrderController.administrateOrder);
 
 app.get('/auth/users', roleMiddleWare('ADMIN'), UserController.getAllUsers);
 
-app.post('/upload', roleMiddleWare('ADMIN'), upload.single('image'), (req, res) => {
-    res.json({
-        url: `/uploads/${req.file.originalname}`,
-    });
-})
+
 
 // PRODUCTS
 app.get('/products', ProductController.getAll);

@@ -158,3 +158,17 @@ export const administrateOrder = async (req, res, next) => {
         })
     }
 }
+
+export const getAllOrders = async (req, res) => {
+    try {
+        const orders = await OrderModel.find()
+        res.json(orders)
+    } catch (error) {
+        console.log('editOrder error', error)
+        return res.status(500).json({
+            message: 'Cannot get orders'
+        })
+    }
+}
+
+

@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, {Schema} from "mongoose";
 
-const ProductSchema = new mongoose.Schema({
+const ProductSchema = new Schema({
     category: {
         type: String,
         required: true,
@@ -100,12 +100,11 @@ const ProductSchema = new mongoose.Schema({
     },
     
     imageUrl: {
-        /* required: true, */
         type: Object,
     },  
 }, 
 {
-    timestamps: true, // прикручием дату создания и обновления сущности
+    timestamps: true, 
 });
 
 export default mongoose.model('Product', ProductSchema);
