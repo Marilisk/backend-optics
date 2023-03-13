@@ -50,10 +50,6 @@ export const getOwner = async (req, res) => {
             }
         }
 
-        /* switch(photoName) {
-            case 
-        } */
-
         res.json(product)
     } catch (error) {
         console.log(error);

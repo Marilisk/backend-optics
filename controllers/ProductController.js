@@ -113,7 +113,6 @@ export const search = async (req, res) => {
     }
 }
 
-
 export const create = async (req, res) => {
     try {
         const userId = req.user.id;

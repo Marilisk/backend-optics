@@ -57,7 +57,6 @@ export const edit = async (req, res, next) => {
 export const confirm = async (req, res, next) => {
     try {
 
-        //const user = await UserModel.findById(req.user.id);
         const innovatedOrder = req.body
         let order = await OrderModel.findOneAndUpdate({ _id: innovatedOrder._id }, {
             cart: innovatedOrder.cart,
@@ -131,6 +130,22 @@ export const deleteOrder = async (req, res, next) => {
 
     }
 }
+
+export const deleteAllOrders = async (req, res, next) => {
+    try {
+        
+        await OrderModel.deleteMany()
+        
+        return res.json({ message: 'successfully deleted' })
+    } catch (error) {
+        console.log('deleteOrder error', error)
+        res.status(500).json({
+            message: 'Cannot remove orders'
+        })
+    }
+}
+
+
 
 
 

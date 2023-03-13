@@ -5,11 +5,10 @@ const UserSchema = new mongoose.Schema({
     fullName: { type: String, required: true, },
     password: { type: String, required: true,  },
     activationLink: { type: String },
-    role: {type: String, default: 'USER', /* ref: 'Role' */},
+    role: {type: String, default: 'USER',},
     isActivated: { type: Boolean, default: false, },
     avatarUrl: String,  //здесь пишет только тип, потому что других параметров нет
     cart: [],
-    //totalCartSum: [],
     favourites: [],
     orders: {type: Array, default: []},
 }, 

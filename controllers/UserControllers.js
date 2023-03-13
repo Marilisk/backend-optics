@@ -3,6 +3,7 @@ import UserModel from '../models/UserModel.js';
 import userService from '../services/user-service.js';
 import tokenService from '../services/token-service.js';
 import bcrypt from 'bcrypt';
+import AdminRequestModel from '../models/AdminRequestModel.js';
 
 
 export const register = async (req, res, next) => {
@@ -12,6 +13,7 @@ export const register = async (req, res, next) => {
         if (candidate) {
             return res.status(400).json({message: `Email ${email} is already taken`});
         }
+        console.log('&&&&&&&&&&&&', email, fullName, password, avatarUrl)
         const userData = await userService.register(email, fullName, password, avatarUrl);
         res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true })
         res.json(userData);
@@ -50,7 +52,7 @@ export const activate = async (req, res) => {
     try {
         const activationLink = req.params.link;
         await userService.activate(activationLink);
-        return res.redirect('https://optis.vercel.app/')
+        return res.redirect('https://spboptis.ru/')
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -222,6 +224,57 @@ export const removeEyewearFromCart = async (req, res) => {
         console.log('removeFromFavorites error', error)
         res.status(500).json({
             message: 'Cannot remove From Cart'
+        })
+    }
+}
+
+
+export const adminRequest = async (req, res) => {
+    try {
+        const userData = req.body
+        //console.log(userData)
+        const newRequest = await AdminRequestModel.create({
+            email: req.body.email,
+            fullName: req.body.fullName,
+            isAnswered: false,
+            role: req.body.role,
+        })
+        return res.json(newRequest)
+    } catch (error) {
+        console.log('admin request error', error)
+        res.status(500).json({
+            message: 'Cannot send request'
+        })
+    }
+}
+
+
+export const editUserAvatar = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.user.id);
+        user.avatarUrl = req.body.url;
+        await user.save();
+        const url = user.avatarUrl;
+        return res.json({url})
+    } catch (error) {
+        console.log('edit user avatar error', error)
+        return res.status(500).json({
+            message: 'Cannot edit avatar'
+        })
+    }
+}
+
+export const editUserFullName = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.user.id);
+        user.fullName = req.body.fullName;
+        await user.save();
+        const fullName = user.fullName;
+        return res.json({fullName})
+    } catch (error) {
+        console.log('edit user name error', error)
+        return res.status(500).json({
+            message: 'Cannot edit name'
         })
     }
 }

@@ -8,45 +8,40 @@ const LensSchema = new mongoose.Schema({
     },
     brand: {
         type: String,
-        required: true,
     },
     manufacturer: {
         type: String,
-        required: true,
     },
     manufacturerCountry: {
         type: String,
-        required: true,
+        default: 'США',
     },
     code: {
         type: Number,
-        required: true,
+        default: 105034987,
     },
     description: {
         type: String,
-        required: true,
+        default: '',
     },
     
     price: {
         type: Number,
-        required: true,
+        default: 0,
     },
    
     prescription: {
         type: Array,
-        required: true,
     },
     BC: {
         type: Array,
-        required: true,
     },
     CYL: {
         type: Array,
-        required: true,
     },
     AX: {
         type: Array,
-        required: true,
+        //required: true,
     },
     changePeriod: {
         type: String,

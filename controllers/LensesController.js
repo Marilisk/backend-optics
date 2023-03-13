@@ -95,7 +95,7 @@ export const searchLenses = async (req, res) => {
 export const create = async (req, res) => {
     try {
         const userId = req.user.id;
-
+        console.log('&&&&&&&&&&&&&&&', req.body)
         const doc = new LensModel({
             category: req.body.category,
             brand: req.body.brand,
@@ -119,10 +119,8 @@ export const create = async (req, res) => {
             user: userId,
             imageUrl: req.body.imageUrl,
         });
-
         const lenses = await doc.save();
         res.json(lenses);
-
     } catch (error) {
         console.log(error);
         res.status(500).json({

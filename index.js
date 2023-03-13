@@ -60,13 +60,18 @@ app.get('/photos/owner/:name', roleMiddleWare('ADMIN'), UploadsController.getOwn
 app.delete('/photos/:name', roleMiddleWare('ADMIN'), UploadsController.deletePhoto)
 
 
-// AUTHENTIFICATION. USER METHODS
-app.post('/auth/login', loginValidator, handleValidationErrors, UserController.login);
-app.post('/auth/register', registerValidator, handleValidationErrors, UserController.register);
-app.get('/auth/activate/:link', UserController.activate);
-app.post('/auth/logout', UserController.logout);
-app.get('/auth/me', checkAuth, UserController.getMe);
-app.get('/auth/refresh', UserController.refresh);
+// AUTHENTIFICATION & USER METHODS
+app.post('/auth/login', loginValidator, handleValidationErrors, UserController.login)
+app.post('/auth/register', registerValidator, handleValidationErrors, UserController.register)
+app.get('/auth/activate/:link', UserController.activate)
+app.post('/auth/logout', UserController.logout)
+app.get('/auth/me', checkAuth, UserController.getMe)
+app.get('/auth/refresh', UserController.refresh)
+app.post('/auth/editavatar', authMiddleware, UserController.editUserAvatar)
+app.post('/auth/editfullname', authMiddleware, UserController.editUserFullName)
+
+app.post('/auth/adminrequest', UserController.adminRequest);
+
 
 // FAVOURITES
 app.post('/addtofav', authMiddleware, UserController.addToFavorites);
@@ -84,13 +89,13 @@ app.post('/confirmorder', authMiddleware, OrderController.confirm)
 app.get('/order/:id', authMiddleware, OrderController.getOne);
 app.delete('/order/:id', authMiddleware, OrderController.deleteOrder);
 
-app.get('/orders', roleMiddleWare('ADMIN'), OrderController.getAllOrders);
+app.delete('/orders', authMiddleware, roleMiddleWare('ADMIN'), OrderController.deleteAllOrders);
 
+// ORDERS ADMINISTRATE
+app.get('/orders', roleMiddleWare('ADMIN'), OrderController.getAllOrders);
 app.patch('/adminorder/:id', roleMiddleWare('ADMIN'), handleValidationErrors, OrderController.administrateOrder);
 
 app.get('/auth/users', roleMiddleWare('ADMIN'), UserController.getAllUsers);
-
-
 
 // PRODUCTS
 app.get('/products', ProductController.getAll);
