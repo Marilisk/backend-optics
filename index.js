@@ -70,7 +70,7 @@ app.get('/auth/refresh', UserController.refresh)
 app.post('/auth/editavatar', authMiddleware, UserController.editUserAvatar)
 app.post('/auth/editfullname', authMiddleware, UserController.editUserFullName)
 
-app.post('/auth/adminrequest', UserController.adminRequest);
+app.post('/auth/adminrequest', UserController.adminRoleRequest);
 
 
 // FAVOURITES
@@ -89,13 +89,15 @@ app.post('/confirmorder', authMiddleware, OrderController.confirm)
 app.get('/order/:id', authMiddleware, OrderController.getOne);
 app.delete('/order/:id', authMiddleware, OrderController.deleteOrder);
 
-app.delete('/orders', authMiddleware, roleMiddleWare('ADMIN'), OrderController.deleteAllOrders);
+//app.delete('/orders', authMiddleware, roleMiddleWare('ADMIN'), OrderController.deleteAllOrders);
 
 // ORDERS ADMINISTRATE
 app.get('/orders', roleMiddleWare('ADMIN'), OrderController.getAllOrders);
 app.patch('/adminorder/:id', roleMiddleWare('ADMIN'), handleValidationErrors, OrderController.administrateOrder);
 
 app.get('/auth/users', roleMiddleWare('ADMIN'), UserController.getAllUsers);
+app.get('/user/:id', roleMiddleWare('ADMIN'), UserController.getOneUser);
+
 
 // PRODUCTS
 app.get('/products', ProductController.getAll);

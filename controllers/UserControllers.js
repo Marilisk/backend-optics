@@ -71,6 +71,20 @@ export const getAllUsers = async (req, res) => {
     }
 }
 
+export const getOneUser = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({
+                message: "User doesn't exist",
+            })
+        }
+        res.json(user)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 
 export const logout = async (req, res, next) => {
     try {
@@ -88,7 +102,6 @@ export const logout = async (req, res, next) => {
 
 export const getMe = async (req, res) => {
     try {
-        //console.log(req.body)
         const user = await UserModel.findById(req.body.userId);
         if (!user) {
             return res.status(404).json({
@@ -229,10 +242,8 @@ export const removeEyewearFromCart = async (req, res) => {
 }
 
 
-export const adminRequest = async (req, res) => {
+export const adminRoleRequest = async (req, res) => {
     try {
-        const userData = req.body
-        //console.log(userData)
         const newRequest = await AdminRequestModel.create({
             email: req.body.email,
             fullName: req.body.fullName,
