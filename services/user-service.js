@@ -36,6 +36,7 @@ class UserService {
         const accessToken = jwt.sign(tokensPayload, JWT_ACCESS_SECRET, {expiresIn: '15m'})
         const refreshToken = jwt.sign(tokensPayload, JWT_REFRESH_SECRET, {expiresIn: '180d'});
         const tokens = {accessToken, refreshToken};
+        
         await tokenService.saveToken(user.id, refreshToken);
         return { ...tokens, user }
     }

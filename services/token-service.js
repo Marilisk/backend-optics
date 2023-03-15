@@ -32,17 +32,18 @@ class TokenService {
     }
 
     async saveToken(userId, refreshToken) {
-        const tokenData = await TokenModel.findOne({user: userId})
+        // ниже закоменчен код, не дающий повторно выдать токен одному юзеру при заходе с другого фронта. надо продумать удаление протухших токенов
+        /* const tokenData = await TokenModel.findOne({user: userId})
         if (tokenData) {
             tokenData.refreshToken = refreshToken;
+            console.log('&&&&&&&&&&& refreshToken'), refreshToken
             return tokenData.save()
-        }
+        } */
         const token = await TokenModel.create({user: userId, refreshToken})
         return token;
     }
 
     async removeToken(refreshToken) {
-        //console.log(refreshToken);
         const tokenData = await TokenModel.deleteOne({refreshToken})
         return tokenData;
     }
