@@ -9,9 +9,10 @@ const OrderSchema = new mongoose.Schema({
     userId: {type: String, required: true,},
     condition: {type: String, default: 'order created',},
     additionalInfo: {type: String, },
+    manager: {type: String, },
 }, 
 {
-    timestamps: true, // прикручием дату создания и обновления сущности
+    timestamps: true, 
 });
 
 export default mongoose.model('Order', OrderSchema);

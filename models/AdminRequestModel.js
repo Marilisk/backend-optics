@@ -7,7 +7,7 @@ const AdminRequestModelSchema = new mongoose.Schema({
     role: {type: String, }
 },
     {
-        timestamps: true, // прикручием дату создания и обновления сущности
+        timestamps: true, 
     });
 
 export default mongoose.model('AdminRequestModel', AdminRequestModelSchema);

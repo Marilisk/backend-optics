@@ -133,9 +133,7 @@ export const deleteOrder = async (req, res, next) => {
 
 export const deleteAllOrders = async (req, res, next) => {
     try {
-        
         await OrderModel.deleteMany()
-        
         return res.json({ message: 'successfully deleted' })
     } catch (error) {
         console.log('deleteOrder error', error)
@@ -146,30 +144,30 @@ export const deleteAllOrders = async (req, res, next) => {
 }
 
 
-
-
-
 export const administrateOrder = async (req, res, next) => {
     try {
         const innovatedOrder = req.body
-        const order = OrderModel.find(el => el.id === innovatedOrder.id)
-        const clientId = order.userId
-        const client = await UserModel.findById(clientId)
+        const order = await OrderModel.findOneAndUpdate({ _id: innovatedOrder._id }, {
+            cart: innovatedOrder.cart,
+            address: innovatedOrder.address,
+            phoneNumber: innovatedOrder.phoneNumber,
+            paymentMade: innovatedOrder.paymentMade,
+            paymentWay: innovatedOrder.paymentWay,
+            condition: innovatedOrder.condition,
+            additionalInfo: innovatedOrder.additionalInfo,
+            manager: innovatedOrder.manager
+        },
+            { returnDocument: 'after', },)
         if (!order) {
             return res.status(404).json({
                 message: 'такой заказ не найден',
             })
         }
-        order = innovatedOrder
-
-        await order.save();
-        await client.save();
-
-        res.json(user);
+        res.json(order);
     } catch (error) {
         console.log('editOrder error', error)
         return res.status(500).json({
-            message: 'Cannot add To Cart'
+            message: 'Cannot edit order'
         })
     }
 }

@@ -12,7 +12,6 @@ import handleValidationErrors from "./utils/handleValidationErrors.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
 import roleMiddleWare from "./middlewares/roleMiddleWare.js";
 import cookieParser from "cookie-parser";
-import { promisify } from 'util';
 
 
 mongoose.connect(process.env.MONGODB_URI)
@@ -55,7 +54,7 @@ app.post('/upload', roleMiddleWare('ADMIN'), upload.single('image'), (req, res) 
     });
 })
 
-app.get('/photos', /* roleMiddleWare('ADMIN'),  */UploadsController.getAllFiles)
+app.get('/photos', roleMiddleWare('ADMIN'), UploadsController.getAllFiles)
 app.get('/photos/owner/:name', roleMiddleWare('ADMIN'), UploadsController.getOwner)
 app.delete('/photos/:name', roleMiddleWare('ADMIN'), UploadsController.deletePhoto)
 
@@ -93,7 +92,7 @@ app.delete('/order/:id', authMiddleware, OrderController.deleteOrder);
 
 // ORDERS ADMINISTRATE
 app.get('/orders', roleMiddleWare('ADMIN'), OrderController.getAllOrders);
-app.patch('/adminorder/:id', roleMiddleWare('ADMIN'), handleValidationErrors, OrderController.administrateOrder);
+app.patch('/adminorder', roleMiddleWare('ADMIN'), OrderController.administrateOrder);
 
 app.get('/auth/users', roleMiddleWare('ADMIN'), UserController.getAllUsers);
 app.get('/user/:id', roleMiddleWare('ADMIN'), UserController.getOneUser);
