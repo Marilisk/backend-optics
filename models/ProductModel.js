@@ -16,7 +16,7 @@ const ProductSchema = new Schema({
     },
     description: {
         type: String,
-        required: true,
+        default: '',
     },
     
     price: {
