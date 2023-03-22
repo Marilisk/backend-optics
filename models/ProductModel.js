@@ -23,6 +23,9 @@ const ProductSchema = new Schema({
         type: Number,
         required: true,
     },
+    inStockQuantity: {
+        type: Number,
+    },
     gender: {
         type: Array,
         required: true,
