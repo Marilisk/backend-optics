@@ -142,6 +142,7 @@ export const create = async (req, res) => {
             prescriptionMax: req.body.prescriptionMax,
             user: userId,
             imageUrl: req.body.imageUrl,
+            inStockQuantity: req.body.inStockQuantity,
         });
 
         const product = await doc.save();
@@ -277,6 +278,7 @@ export const update = async (req, res) => {
                 prescriptionMax: req.body.prescriptionMax,
                 user: req.user._id,
                 imageUrl: req.body.imageUrl,
+                inStockQuantity: req.body.inStockQuantity,
             },
         );
 
