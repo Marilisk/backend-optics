@@ -14,7 +14,6 @@ const CLIENT_URL = process.env.CLIENT_URL
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET
 
-
 export const register = async (req, res, next) => {
     try {
         const { email, fullName, password, avatarUrl } = req.body;
