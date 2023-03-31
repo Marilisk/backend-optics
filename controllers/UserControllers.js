@@ -4,16 +4,24 @@ import userService from '../services/user-service.js';
 import tokenService from '../services/token-service.js';
 import bcrypt from 'bcrypt';
 import AdminRequestModel from '../models/AdminRequestModel.js';
+import { v4 as uuidv4 } from 'uuid';
+import mailService from '../services/mail-service.js';
+import dotenv from 'dotenv'; 32
+dotenv.config();
+
+const API_URL = process.env.API_URL
+const CLIENT_URL = process.env.CLIENT_URL
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET
 
 
 export const register = async (req, res, next) => {
     try {
         const { email, fullName, password, avatarUrl } = req.body;
-        const candidate = await UserModel.findOne({email})
+        const candidate = await UserModel.findOne({ email })
         if (candidate) {
-            return res.status(400).json({message: `Email ${email} is already taken`});
+            return res.status(400).json({ message: `Email ${email} is already taken` });
         }
-        console.log('&&&&&&&&&&&&', email, fullName, password, avatarUrl)
         const userData = await userService.register(email, fullName, password, avatarUrl);
         res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true })
         res.json(userData);
@@ -28,16 +36,16 @@ export const register = async (req, res, next) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await UserModel.findOne({email})
+        const user = await UserModel.findOne({ email })
         if (!user) {
-            return res.status(400).json({message: `account with email ${email} doesnt exist`});
+            return res.status(400).json({ message: `account with email ${email} doesnt exist` });
         }
         const isPassValid = await bcrypt.compare(password, user.password);
         if (!isPassValid) {
-            return res.status(400).json({message: 'неверный логин или пароль'})
+            return res.status(400).json({ message: 'неверный логин или пароль' })
         }
-        const userData = await userService.login(user);      
-        res.cookie('refreshToken', userData.refreshToken, 
+        const userData = await userService.login(user);
+        res.cookie('refreshToken', userData.refreshToken,
             { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true })
         res.json(userData);
     } catch (error) {
@@ -60,6 +68,99 @@ export const activate = async (req, res) => {
         })
     }
 }
+
+export const forgotPassword = async (req, res) => {
+    try {
+        const email = req.body.email
+        const candidate = await UserModel.findOne({ email })
+        if (!candidate) {
+            return res.status(400).json({ message: `Пользователь с таким email ${email} не зарегистрирован` });
+        }
+        const resetLink = uuidv4();
+        await UserModel.updateOne({ email },
+            { resetPasswordLink: resetLink })
+        await mailService.sendForgotPasswordMail(email, `${API_URL}/auth/forgotpassword/${resetLink}`)
+
+        res.json({
+            message: 'Ссылка для сброса пароля направлена на email. Торопитесь, она действительна только 15 минут.',
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'ошибка сброса пароля',
+        })
+    }
+}
+
+export const forgotPasswordLink = async (req, res) => {
+    try {
+        const resetPasswordLink = req.params.link;
+        const user = await UserModel.findOne({ resetPasswordLink })
+        if (!user) {
+            return res.status(404).json({
+                message: 'Некорректная ссылка',
+            });
+        }
+        user.allowedToResetPassword = true
+        await user.save()
+        return res.redirect(`${CLIENT_URL}/auth/setnewpassword`)
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'can not activate',
+        })
+    }
+}
+
+
+export const setNewPassword = async (req, res) => {
+    try {
+        const email = req.body.email
+        const user = await UserModel.findOne({ email })
+        if (!user) {
+            return res.status(400).json({ message: `Пользователь с таким email ${email} не зарегистрирован` });
+        }
+        const newPassword = req.body.newPassword
+        const salt = await bcrypt.genSalt(3)
+        const hashPassword = await bcrypt.hash(newPassword, salt)
+        if (user.allowedToResetPassword) {
+            await UserModel.updateOne({ email },
+                { resetPasswordLink: '', password: hashPassword, allowedToResetPassword: false },
+                { returnDocument: 'after' })
+            const tokensPayload = { email: user.email, id: user.id, isActivated: user.isActivated };
+            const accessToken = jwt.sign(tokensPayload, JWT_ACCESS_SECRET, { expiresIn: '15m' })
+            const refreshToken = jwt.sign(tokensPayload, JWT_REFRESH_SECRET, { expiresIn: '180d' });
+            const tokens = { accessToken, refreshToken };
+            await tokenService.saveToken(tokensPayload.id, tokens.refreshToken)
+            res.cookie('refreshToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true })
+            res.json({ user, message: 'пароль успешно изменён' })
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'ошибка изменения пароля',
+        })
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const getAllUsers = async (req, res) => {
     try {
@@ -190,7 +291,7 @@ export const addEyewearToCart = async (req, res, next) => {
         if (good) {
             good.quantity += 1;
         } else {
-            user.cart.push({productId, quantity: 1, leftLens: req.body.lens, rightLens: req.body.lens, cat: req.body.cat });
+            user.cart.push({ productId, quantity: 1, leftLens: req.body.lens, rightLens: req.body.lens, cat: req.body.cat });
         }
         await user.save();
         const result = user.cart;
@@ -265,7 +366,7 @@ export const editUserAvatar = async (req, res) => {
         user.avatarUrl = req.body.url;
         await user.save();
         const url = user.avatarUrl;
-        return res.json({url})
+        return res.json({ url })
     } catch (error) {
         console.log('edit user avatar error', error)
         return res.status(500).json({
@@ -280,7 +381,7 @@ export const editUserFullName = async (req, res) => {
         user.fullName = req.body.fullName;
         await user.save();
         const fullName = user.fullName;
-        return res.json({fullName})
+        return res.json({ fullName })
     } catch (error) {
         console.log('edit user name error', error)
         return res.status(500).json({

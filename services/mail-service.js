@@ -18,10 +18,23 @@ class MailService {
         await this.transporter.sendMail({
             from: 'optisinfomail@gmail.com',
             to,
-            subject: `Оптика. Активация аккаунта на http://localhost:4444 `,
+            subject: `Оптика. Активация аккаунта на spboptis.ru `,
             text: '',
             html: `<div>
                         <h1>Для активации аккаунта, пожалуйста, перейдите по ссылке:</h1>
+                        <a href="${link}">${link}</a>
+                    </div>`
+        })
+    }
+
+    async sendForgotPasswordMail(to, link) {
+        await this.transporter.sendMail({
+            from: 'optisinfomail@gmail.com',
+            to,
+            subject: `Оптика. Восстановление пароля на spboptis.ru `,
+            text: '',
+            html: `<div>
+                        <h1>Для сброса пароля, пожалуйста, перейдите по ссылке:</h1>
                         <a href="${link}">${link}</a>
                     </div>`
         })

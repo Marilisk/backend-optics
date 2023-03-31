@@ -9,6 +9,7 @@ dotenv.config();
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET
+const API_URL = process.env.API_URL
 
 class UserService {
 
@@ -22,7 +23,7 @@ class UserService {
                                              activationLink, 
                                              role: 'USER', 
                                              avatarUrl})
-        await mailService.sendActivationMail(email, `https://backend-optics-production.up.railway.app/${activationLink}`);
+        await mailService.sendActivationMail(email, `${API_URL}/${activationLink}`);
         const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated};
         const accessToken = jwt.sign(tokensPayload, JWT_ACCESS_SECRET, {expiresIn: '15m'})
         const refreshToken = jwt.sign(tokensPayload, JWT_REFRESH_SECRET, {expiresIn: '180d'});
@@ -31,6 +32,7 @@ class UserService {
         return { ...tokens, user }
     }
 
+    
     async login(user) {
         const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated, role: user.role};
         const accessToken = jwt.sign(tokensPayload, JWT_ACCESS_SECRET, {expiresIn: '15m'})

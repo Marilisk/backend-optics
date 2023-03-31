@@ -33,6 +33,8 @@ const storage = multer.diskStorage({  // создаём хранилище дл�
     },
 });
 
+// for develop mode fixing cert error:
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
 app.use(express.json()); 
 app.use(cookieParser());
@@ -63,6 +65,13 @@ app.delete('/photos/:name', roleMiddleWare('ADMIN'), UploadsController.deletePho
 app.post('/auth/login', loginValidator, handleValidationErrors, UserController.login)
 app.post('/auth/register', registerValidator, handleValidationErrors, UserController.register)
 app.get('/auth/activate/:link', UserController.activate)
+
+app.post('/auth/forgotpassword', UserController.forgotPassword)
+app.get('/auth/forgotpassword/:link', UserController.forgotPasswordLink)
+app.post('/auth/setnewpassword', UserController.setNewPassword)
+
+
+
 app.post('/auth/logout', UserController.logout)
 app.get('/auth/me', checkAuth, UserController.getMe)
 app.get('/auth/refresh', UserController.refresh)
