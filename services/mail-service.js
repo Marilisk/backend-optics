@@ -8,8 +8,8 @@ class MailService {
             port: 587,
             secure: false,
             auth: {
-                user: 'optisinfomail@gmail.com',
-                pass: 'baqxdpwxegkwtuok',
+                user: 'optismailer@gmail.com',
+                pass: 'ljmoedfzoiqfmsyj',
             }
         })
     }
