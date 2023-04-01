@@ -3,6 +3,8 @@
 # dependencies
 /node_modules
 /uploads
+*.webp
+/package-lock.json
 /.pnp
 .pnp.js
 
