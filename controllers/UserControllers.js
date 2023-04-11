@@ -145,22 +145,6 @@ export const setNewPassword = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const getAllUsers = async (req, res) => {
     try {
         const users = await UserModel.find();
@@ -199,7 +183,7 @@ export const logout = async (req, res, next) => {
     }
 }
 
-export const getMe = async (req, res) => {
+/* export const getMe = async (req, res) => {
     try {
         const user = await UserModel.findById(req.body.userId);
         if (!user) {
@@ -224,12 +208,12 @@ export const getMe = async (req, res) => {
             message: 'no access',
         });
     }
-}
+} */
 
 export const refresh = async (req, res, next) => {
     try {
         const { refreshToken } = req.cookies;
-        const userData = jwt.verify(refreshToken, 'jwt-refresh-secret-key');
+        const userData = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
         const tokenFromDB = await tokenService.findToken(refreshToken);
         if (!refreshToken || !userData || !tokenFromDB) {
             return res.status(401).json({ message: `no token or smthing` });

@@ -71,7 +71,7 @@ app.get('/auth/forgotpassword/:link', UserController.forgotPasswordLink)
 app.post('/auth/setnewpassword', UserController.setNewPassword)
 
 app.post('/auth/logout', UserController.logout)
-app.get('/auth/me', checkAuth, UserController.getMe)
+//app.get('/auth/me', checkAuth, UserController.getMe) вроде ненужный метод, вместо него рефреш
 app.get('/auth/refresh', UserController.refresh)
 app.post('/auth/editavatar', authMiddleware, UserController.editUserAvatar)
 app.post('/auth/editfullname', authMiddleware, UserController.editUserFullName)

@@ -1,5 +1,8 @@
 import jwt from 'jsonwebtoken';
 import UserModel from '../models/UserModel.js';
+dotenv.config();
+
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET
 
 export default (targetRole) => {
 
@@ -13,10 +16,8 @@ export default (targetRole) => {
             if (!refreshToken) {
                 return res.status(403).json({ message: 'no token' });
             }
-            const userId = jwt.verify(refreshToken, 'jwt-refresh-secret-key').id;
+            const userId = jwt.verify(refreshToken, JWT_REFRESH_SECRET).id;
             const {role} = await UserModel.findById(userId);
-            //console.log(role)
-
             let hasRole = false;
             if (role === targetRole) {
                 hasRole = true;
@@ -31,5 +32,4 @@ export default (targetRole) => {
             return res.status(403).json({ message: 'User s not authorised' })
         }
     }
-    
 }
