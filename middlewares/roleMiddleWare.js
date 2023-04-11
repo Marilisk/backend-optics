@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import UserModel from '../models/UserModel.js';
+import dotenv from 'dotenv'; 
 dotenv.config();
 
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET

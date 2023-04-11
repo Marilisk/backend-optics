@@ -6,7 +6,6 @@ import fs from 'fs';
 import mongoose from "mongoose";
 import cors from 'cors';
 import { registerValidator, loginValidator } from './validations.js';
-import checkAuth from './utils/checkAuth.js';
 import { LensesController, OrderController, ProductController, UploadsController, UserController } from './controllers/index.js';
 import handleValidationErrors from "./utils/handleValidationErrors.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
