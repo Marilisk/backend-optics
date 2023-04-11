@@ -23,7 +23,7 @@ class UserService {
                                              activationLink, 
                                              role: 'USER', 
                                              avatarUrl})
-        await mailService.sendActivationMail(email, `${API_URL}/${activationLink}`);
+        await mailService.sendActivationMail(email, `${API_URL}/auth/activate/${activationLink}`);
         const tokensPayload = {email: user.email, id: user.id, isActivated: user.isActivated};
         const accessToken = jwt.sign(tokensPayload, JWT_ACCESS_SECRET, {expiresIn: '15m'})
         const refreshToken = jwt.sign(tokensPayload, JWT_REFRESH_SECRET, {expiresIn: '180d'});

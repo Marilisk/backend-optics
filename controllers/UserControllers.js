@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import AdminRequestModel from '../models/AdminRequestModel.js';
 import { v4 as uuidv4 } from 'uuid';
 import mailService from '../services/mail-service.js';
-import dotenv from 'dotenv'; 32
+import dotenv from 'dotenv'; 
 dotenv.config();
 
 const API_URL = process.env.API_URL

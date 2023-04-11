@@ -34,7 +34,7 @@ const storage = multer.diskStorage({  // создаём хранилище дл�
 });
 
 // for develop mode fixing cert error:
-process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+//process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
 app.use(express.json()); 
 app.use(cookieParser());
@@ -70,14 +70,11 @@ app.post('/auth/forgotpassword', UserController.forgotPassword)
 app.get('/auth/forgotpassword/:link', UserController.forgotPasswordLink)
 app.post('/auth/setnewpassword', UserController.setNewPassword)
 
-
-
 app.post('/auth/logout', UserController.logout)
 app.get('/auth/me', checkAuth, UserController.getMe)
 app.get('/auth/refresh', UserController.refresh)
 app.post('/auth/editavatar', authMiddleware, UserController.editUserAvatar)
 app.post('/auth/editfullname', authMiddleware, UserController.editUserFullName)
-
 app.post('/auth/adminrequest', UserController.adminRoleRequest);
 
 
@@ -96,7 +93,6 @@ app.post('/editorder', authMiddleware, OrderController.edit);
 app.post('/confirmorder', authMiddleware, OrderController.confirm)
 app.get('/order/:id', authMiddleware, OrderController.getOne);
 app.delete('/order/:id', authMiddleware, OrderController.deleteOrder);
-
 //app.delete('/orders', authMiddleware, roleMiddleWare('ADMIN'), OrderController.deleteAllOrders);
 
 // ORDERS ADMINISTRATE
