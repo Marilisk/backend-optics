@@ -41,7 +41,6 @@ const LensSchema = new mongoose.Schema({
     },
     AX: {
         type: Array,
-        //required: true,
     },
     changePeriod: {
         type: String,

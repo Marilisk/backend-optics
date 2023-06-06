@@ -169,7 +169,6 @@ export const getAll = async (req, res) => {
 }
 export const getFilteredProducts = async (req, res) => {
     try {
-        //console.log(req.body);
         const filterName = req.body.filterName;
         const filterOption = req.body.filterOption;
         const products = await ProductModel.find({ [filterName]: `${filterOption}` }).limit(9)
