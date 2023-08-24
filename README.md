@@ -5,5 +5,5 @@ nohup node index.js &
 docker build . -t optics-api
 
 # запустить контейнер из созданного ранее image
-docker run -p 80:5555 -d optics-api
+docker run -p 80:3443 -d optics-api
 

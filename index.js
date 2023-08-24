@@ -140,11 +140,13 @@ const sslServer = https.createServer({
     console.log('server OK');
 }); */
 
-sslServer.listen(5555, 
+
+
+sslServer.listen(3443,  // or need 3443 / 5555 there?
     (err) => {
         if (err) {
             return console.log(err);
         }
-        console.log('sslServer OK on 5555 PORT')
+        console.log('sslServer OK on 3443 PORT')
     } 
 )
