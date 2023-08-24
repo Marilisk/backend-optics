@@ -128,10 +128,10 @@ app.post('/lenses', authMiddleware, roleMiddleWare('ADMIN'), LensesController.cr
 app.delete('/lenses/:id', authMiddleware, roleMiddleWare('ADMIN'), LensesController.remove);
 app.patch('/lenses/:id', authMiddleware, roleMiddleWare('ADMIN'), LensesController.update);
 
-/* const sslServer = https.createServer({
+const sslServer = https.createServer({
     key: fs.readFileSync(path.join('cert', 'key.pem')),
     cert: fs.readFileSync(path.join('cert', 'cert.pem')),
-}, app) */
+}, app)
 
 app.listen(process.env.PORT || 5555, (err) => {
     if (err) {
@@ -141,12 +141,11 @@ app.listen(process.env.PORT || 5555, (err) => {
 });
 
 
-
-/* sslServer.listen(3443,  // or need 3443 / 5555 there?
+sslServer.listen(3443,  
     (err) => {
         if (err) {
             return console.log(err);
         }
         console.log('sslServer OK on 3443 PORT')
     } 
-) */
+)
