@@ -3,6 +3,7 @@ dotenv.config();
 import express from "express";
 import multer from "multer";
 import fs from 'fs';
+import path from 'path';
 import mongoose from "mongoose";
 import cors from 'cors';
 import { registerValidator, loginValidator } from './validations.js';
@@ -11,6 +12,7 @@ import handleValidationErrors from "./utils/handleValidationErrors.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
 import roleMiddleWare from "./middlewares/roleMiddleWare.js";
 import cookieParser from "cookie-parser";
+import https from 'https';
 
 
 mongoose.connect(process.env.MONGODB_URI)
@@ -126,10 +128,23 @@ app.post('/lenses', authMiddleware, roleMiddleWare('ADMIN'), LensesController.cr
 app.delete('/lenses/:id', authMiddleware, roleMiddleWare('ADMIN'), LensesController.remove);
 app.patch('/lenses/:id', authMiddleware, roleMiddleWare('ADMIN'), LensesController.update);
 
+const sslServer = https.createServer({
+    key: fs.readFileSync(path.join('cert', 'key.pem')),
+    cert: fs.readFileSync(path.join('cert', 'cert.pem')),
+}, app)
 
-app.listen(process.env.PORT || 5555, (err) => {
+/* app.listen(process.env.PORT || 5555, (err) => {
     if (err) {
         return console.log(err);
     }
     console.log('server OK');
-});
+}); */
+
+sslServer.listen(3443, 
+    (err) => {
+        if (err) {
+            return console.log(err);
+        }
+        console.log('sslServer OK on 3443 PORT')
+    } 
+)
