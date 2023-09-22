@@ -13,6 +13,7 @@ import authMiddleware from "./middlewares/authMiddleware.js";
 import roleMiddleWare from "./middlewares/roleMiddleWare.js";
 import cookieParser from "cookie-parser";
 import https from 'https';
+import { fileURLToPath } from 'url';
 
 
 mongoose.connect(process.env.MONGODB_URI)
@@ -40,6 +41,9 @@ const storage = multer.diskStorage({  // создаём хранилище дл�
 app.use(express.json()); 
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads')); // чтобы при запросах на аплоад экспресс поняла чаво показывать в папкек аплоадс 
+const __filename = fileURLToPath(import.meta.url); // это и 3 строки ниже для проверки домена certbot-ом
+const __dirname = path.dirname(__filename);
+app.use(express.static(__dirname + '/static', {dotfiles: 'allow'}))
 
 app.use(cors({
     credentials: true,
@@ -137,7 +141,7 @@ app.listen(process.env.PORT || 5555, (err) => {
     if (err) {
         return console.log(err);
     }
-    console.log('server OK');
+    console.log('server OK on 5555');
 });
 
 
