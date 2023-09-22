@@ -137,11 +137,11 @@ const sslServer = https.createServer({
     cert: fs.readFileSync(path.join('cert', 'cert.pem')),
 }, app)
 
-app.listen(process.env.PORT || 5555, (err) => {
+app.listen(process.env.PORT || 80, (err) => {
     if (err) {
         return console.log(err);
     }
-    console.log('server OK on 5555');
+    console.log('server OK on 80');
 });
 
 
