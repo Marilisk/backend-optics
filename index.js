@@ -135,6 +135,7 @@ app.patch('/lenses/:id', authMiddleware, roleMiddleWare('ADMIN'), LensesControll
 const sslServer = https.createServer({
     key: fs.readFileSync(path.join('cert', 'key.pem')),
     cert: fs.readFileSync(path.join('cert', 'cert.pem')),
+    ca: fs.readFileSync(path.join('cert', 'chain.pem')),
 }, app)
 
 app.listen(process.env.PORT || 80, (err) => {
@@ -145,11 +146,11 @@ app.listen(process.env.PORT || 80, (err) => {
 });
 
 
-/* sslServer.listen(3443,  
+sslServer.listen(3443,  
     (err) => {
         if (err) {
             return console.log(err);
         }
         console.log('sslServer OK on 3443 PORT')
     } 
-) */
+)
