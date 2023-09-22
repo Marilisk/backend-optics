@@ -145,11 +145,11 @@ app.listen(process.env.PORT || 80, (err) => {
 });
 
 
-sslServer.listen(3443,  
+/* sslServer.listen(3443,  
     (err) => {
         if (err) {
             return console.log(err);
         }
         console.log('sslServer OK on 3443 PORT')
     } 
-)
+) */
