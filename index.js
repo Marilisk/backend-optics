@@ -7,13 +7,14 @@ import path from 'path';
 import mongoose from "mongoose";
 import cors from 'cors';
 import { registerValidator, loginValidator } from './validations.js';
-import { LensesController, OrderController, ProductController, UploadsController, UserController } from './controllers/index.js';
+import { BookingController, LensesController, OrderController, ProductController, UploadsController, UserController } from './controllers/index.js';
 import handleValidationErrors from "./utils/handleValidationErrors.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
 import roleMiddleWare from "./middlewares/roleMiddleWare.js";
 import cookieParser from "cookie-parser";
 import https from 'https';
 import { fileURLToPath } from 'url';
+import accessMiddleWare from './middlewares/accessMiddleWare.js';
 
 
 mongoose.connect(process.env.MONGODB_URI)
@@ -121,6 +122,14 @@ app.post('/products', authMiddleware, roleMiddleWare('ADMIN'), ProductController
 app.get('/products/:id', ProductController.getOne);
 app.delete('/products/:id', authMiddleware, roleMiddleWare('ADMIN'), ProductController.remove);
 app.patch('/products/:id', authMiddleware, roleMiddleWare('ADMIN'), ProductController.update);
+
+
+// ***** temporary BOOKING ***** //
+app.get('/bookings/:count/:skip', BookingController.getAll);
+app.post('/bookings', accessMiddleWare, BookingController.create);
+app.post('/bookings/delete', accessMiddleWare, BookingController.remove);
+
+
 
 // LENSES
 app.get('/lenses', LensesController.getAllLenses);
